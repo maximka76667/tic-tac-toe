@@ -8,20 +8,20 @@ interface BotInteface {
 }
 
 function Bot({ handleClick, turn, cells, lines }: BotInteface) {
-  function generateNumber() {
-    let botTurnNumber;
+  function generateNumber(): number {
+    let botTurnNumber: number;
     do {
       botTurnNumber = Math.floor(Math.random() * 9);
     } while (cells.includes('') && cells[botTurnNumber] !== '');
     return botTurnNumber;
   }
 
-  function playTurn(i: number) {
+  function playTurn(i: number): void {
     console.log('Рандом ' + i);
     handleClick(i);
   }
 
-  function bot() {
+  function bot(): void | null {
     if(turn === 'O') {
       for (let i = 0; i < lines.length; i++) {
         const [a, b, c] = lines[i];

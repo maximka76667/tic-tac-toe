@@ -1,6 +1,7 @@
 import React from 'react';
 import Board from './Board';
-import { Route, Switch, Link } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
+import Menu from './Menu';
 
 function App() {
   return (
@@ -8,8 +9,7 @@ function App() {
       <main className="content">
         <Switch>
           <Route path="/" exact>
-            <Link to="/single">1 player</Link>
-            <Link to="/multi">2 Players</Link>
+            <Menu />
           </Route>
           <Route path="/single">
             <div className="game">
