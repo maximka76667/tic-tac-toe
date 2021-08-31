@@ -7,7 +7,7 @@ import { HashRouter } from 'react-router-dom';
 
 ReactDOM.render(
   <React.StrictMode>
-    <HashRouter>
+    <HashRouter basename="/tic-tac-toe">
       <App />
     </HashRouter>
   </React.StrictMode>,
