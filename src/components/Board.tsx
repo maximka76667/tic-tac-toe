@@ -25,23 +25,17 @@ function Board(props: BoardInterface) {
   ];
 
   function handleClick(i: number): void {
-    if(cells[i] || isEnd || isWinner()) {
-      return;
-    }
+    if(cells[i] || isEnd || isWinner()) return;
     checkEndGame();
     const newCells = cells.slice();
     newCells[i] = turn;
-    console.log('Ход', turn, i);
     setCells(newCells);
     changeTurn(turn);
   }
 
   function changeTurn(turn: string): void {
-    if(turn === 'X') {
-      setTurn('O');
-    } else if(turn === 'O') {
-      setTurn('X')
-    }
+    if(turn === 'X') return setTurn('O');
+    if(turn === 'O') return setTurn('X');
   }
 
   function checkEndGame(): void {
@@ -59,11 +53,7 @@ function Board(props: BoardInterface) {
   }
 
   function isDraw(): boolean {
-    for(let i = 0; i < cells.length; i++) {
-      if(!cells[i]) {
-        return false;
-      }
-    }
+    for(let i = 0; i < cells.length; i++) if(!cells[i]) return false;
     return true;
   }
 
@@ -74,9 +64,7 @@ function Board(props: BoardInterface) {
   function calculateWinner(): string {
     for (let i = 0; i < lines.length; i++) {
       const [a, b, c] = lines[i];
-      if (cells[a] && cells[a] === cells[b] && cells[a] === cells[c]) {
-        return cells[a];
-      }
+      if (cells[a] && cells[a] === cells[b] && cells[a] === cells[c]) return cells[a];
     }
     return '';
   }

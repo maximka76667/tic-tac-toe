@@ -12,12 +12,11 @@ function Bot({ handleClick, turn, cells, lines }: BotInteface) {
     let botTurnNumber: number;
     do {
       botTurnNumber = Math.floor(Math.random() * 9);
-    } while (cells.includes('') && cells[botTurnNumber] !== '');
+    } while (cells.includes('') && cells[botTurnNumber]);
     return botTurnNumber;
   }
 
   function playTurn(i: number): void {
-    console.log('Рандом ' + i);
     handleClick(i);
   }
 
