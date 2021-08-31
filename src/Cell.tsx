@@ -8,7 +8,7 @@ interface CellInterface {
 function Cell(props: CellInterface) {
 
   return (
-    <button onClick={() => props.onClick()}>{props.value}</button>
+    <button className="cell" onClick={props.onClick}>{props.value}</button>
   )
 }
 

@@ -1,10 +1,17 @@
 import React from 'react';
+import { useHistory } from 'react-router';
+import Bot from './Bot';
 import Cell from './Cell'
 
-function Board(props: object) {
+interface BoardInterface {
+  isPlayWithBot: boolean,
+}
 
-  const [cells, setCells] = React.useState(Array<string | null>(9).fill(null))
-  const [xIsNext, setXIsNext] = React.useState(true);
+function Board(props: BoardInterface) {
+  let history = useHistory();
+  const [cells, setCells] = React.useState(Array<string>(9).fill(''))
+  // const [xIsNext, setXIsNext] = React.useState(true);
+  const [turn, setTurn] = React.useState<string>('');
   const [status, setStatus] = React.useState('');
   const [isEnd, setIsEnd] = React.useState(false);
   const [isBotActive, setIsBotActive] = React.useState(false);
@@ -19,144 +26,142 @@ function Board(props: object) {
     [2, 4, 6],
   ];
 
-  function renderCell(i: number) {
-    return <Cell onClick={() => handleClick(i)} value={cells[i]} />
-  }
-
   function handleClick(i: number) {
-    checkEndGame();
-    if(cells[i]) {
+    if(cells[i] || isEnd) {
       return;
     }
-    if(isEnd) {
-      return endGame();
-    }
+    checkEndGame();
     const newCells = cells.slice();
-    newCells[i] = xIsNext ? 'X' : 'O';
-    console.log('Ход', xIsNext ? 'X' : 'O', i);
+    newCells[i] = turn;
+    console.log('Ход', turn, i);
     setCells(newCells);
-    setXIsNext(!xIsNext);
+    changeTurn(turn);
   }
 
-  function bot() {
-    if(isEnd) {
-      return endGame();
-    }
-    if(!xIsNext) {
-      for (let i = 0; i < lines.length; i++) {
-        const [a, b, c] = lines[i];
-        if (cells[a] && cells[a] === cells[b] && !cells[c]) {
-          console.log('Бот', c, '1');
-          return handleClick(c);
-        }
-        if(cells[b] && cells[b] === cells[c] && !cells[a]) {
-          console.log('Бот', a, '2');
-          return handleClick(a);
-        }
-        if(cells[a] && cells[a] === cells[c] && !cells[b]) {
-          console.log('Бот', b, '3');
-          return handleClick(b);
-        }
-      }
-      if(!isEnd) {
-        let botTurnNumber;
-        do {
-          checkEndGame();
-          botTurnNumber = generateNumber();
-          handleClick(botTurnNumber);
-          console.log('Рандом', botTurnNumber);
-          console.log(isEnd + ' IsEnd');
-        } while (cells[botTurnNumber] !== null && !isEnd);
-      }
+  function changeTurn(turn: string) {
+    if(turn === 'X') {
+      setTurn('O');
+    } else if(turn === 'O') {
+      setTurn('X')
     }
   }
 
-  function generateNumber() {
-    return Math.floor(Math.random() * 9);
-  }
+  // function bot() {
+  //   if(turn === 'O') {
+  //     for (let i = 0; i < lines.length; i++) {
+  //       const [a, b, c] = lines[i];
+  //       if (cells[a] && cells[a] === cells[b] && !cells[c]) {
+  //         console.log('Бот', c, '1');
+  //         return handleClick(c);
+  //       }
+  //       if(cells[b] && cells[b] === cells[c] && !cells[a]) {
+  //         console.log('Бот', a, '2');
+  //         return handleClick(a);
+  //       }
+  //       if(cells[a] && cells[a] === cells[c] && !cells[b]) {
+  //         console.log('Бот', b, '3');
+  //         return handleClick(b);
+  //       }
+  //     }
+  //       let botTurnNumber;
+  //       do {
+  //         checkEndGame();
+  //         botTurnNumber = generateNumber();
+  //         handleClick(botTurnNumber);
+  //         console.log('Рандом', botTurnNumber);
+  //         console.log(isEnd + ' IsEnd');
+  //       } while (cells[botTurnNumber] !== null ?? !isEnd);
+  //     }
+  //   }
+  // }
 
   function checkEndGame() {
-    checkWin();
+    if(isWinner()) return win();
+    if(isDraw()) return draw();
+    setStatus('Turn: ' + turn);
+  }
+
+  function isWinner(): boolean {
+    return calculateWinner() !== '';
+  }
+
+  function win(): void {
+    endGame(calculateWinner());
+  }
+
+  function isDraw(): boolean {
     for(let i = 0; i < cells.length; i++) {
       if(!cells[i]) {
-        return;
+        return false;
       }
     }
-    endGame();
+    return true;
   }
 
-  function checkWin() {
-    const winner = calculateWinner();
-    if (winner) {
-      endGame();
-      setStatus('Winner: ' + winner);
-    } else if(isEnd && winner === null) {
-      setStatus('Winner: Draw');
-    } else {
-      setStatus('Next player: ' + (xIsNext ? 'X' : 'O'));
-    }
+  function draw(): void {
+    endGame('draw');
   }
 
-  function calculateWinner() {
+  function calculateWinner(): string {
     for (let i = 0; i < lines.length; i++) {
       const [a, b, c] = lines[i];
       if (cells[a] && cells[a] === cells[b] && cells[a] === cells[c]) {
         return cells[a];
       }
     }
-    return null;
+    return '';
   }
 
-  function endGame() {
-    console.log('Game Over!');
-    setXIsNext(true);
-    setIsEnd(true);
+  function endGame(gameStatus: string): void {
     setIsBotActive(false);
+    console.log('Game Over!');
+    setTurn('');
+    setIsEnd(true);
+    if(gameStatus === 'draw') {
+      return setStatus('Draw!');
+    }
+    if(gameStatus === 'X' || 'O') {
+      return setStatus('Winner: ' + gameStatus);
+    }
   }
 
   function restartGame() {
-    setCells(Array(9).fill(null));
+    
+    setCells(Array(9).fill(''));
     setIsEnd(false);
-    setXIsNext(true);
+    setTurn('X');
+    setStatus('');
     setIsBotActive(true);
+  }
+
+  function goToMenu() {
+    history.push("/");
   }
 
   React.useEffect(() => {
     checkEndGame();
+
+    // eslint-disable-next-line
   }, [cells])
 
   React.useEffect(() => {
-    if(isBotActive) {
-      bot();
-    }
-  }, [isBotActive, cells])
-
-  React.useEffect(() => {
-    if(isEnd) {
-      endGame();
-    }
-  }, [isEnd])
-
-  React.useEffect(() => {
-    setIsBotActive(true);
-  }, [])
+    restartGame();
+  }, []);
 
   return (
     <>
       <p>{ status }</p>
       <p>{ isEnd.toString() }</p>
       <div className="board">
-        { renderCell(0) }
-        { renderCell(1) }
-        { renderCell(2) }
-        { renderCell(3) }
-        { renderCell(4) }
-        { renderCell(5) }
-        { renderCell(6) }
-        { renderCell(7) }
-        { renderCell(8) }
+        {
+          Array(9).fill('').map((c, i) => {
+            return <Cell onClick={() => handleClick(i)} key={i} value={cells[i]} />
+          })
+        }
       </div>
+      { props.isPlayWithBot && <Bot handleClick={handleClick} cells={cells} lines={lines} isBotActive={isBotActive} turn={turn} />}
       <button className="reset-button" onClick={restartGame}>Reset</button>
+      <button className="menu-button" onClick={goToMenu}>Menu</button>
     </>
   )
 }
