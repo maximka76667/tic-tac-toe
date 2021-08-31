@@ -10,11 +10,9 @@ interface BoardInterface {
 function Board(props: BoardInterface) {
   let history = useHistory();
   const [cells, setCells] = React.useState(Array<string>(9).fill(''))
-  // const [xIsNext, setXIsNext] = React.useState(true);
   const [turn, setTurn] = React.useState<string>('');
   const [status, setStatus] = React.useState('');
   const [isEnd, setIsEnd] = React.useState(false);
-  const [isBotActive, setIsBotActive] = React.useState(false);
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -26,8 +24,8 @@ function Board(props: BoardInterface) {
     [2, 4, 6],
   ];
 
-  function handleClick(i: number) {
-    if(cells[i] || isEnd) {
+  function handleClick(i: number): void {
+    if(cells[i] || isEnd || isWinner()) {
       return;
     }
     checkEndGame();
@@ -38,7 +36,7 @@ function Board(props: BoardInterface) {
     changeTurn(turn);
   }
 
-  function changeTurn(turn: string) {
+  function changeTurn(turn: string): void {
     if(turn === 'X') {
       setTurn('O');
     } else if(turn === 'O') {
@@ -46,36 +44,7 @@ function Board(props: BoardInterface) {
     }
   }
 
-  // function bot() {
-  //   if(turn === 'O') {
-  //     for (let i = 0; i < lines.length; i++) {
-  //       const [a, b, c] = lines[i];
-  //       if (cells[a] && cells[a] === cells[b] && !cells[c]) {
-  //         console.log('Бот', c, '1');
-  //         return handleClick(c);
-  //       }
-  //       if(cells[b] && cells[b] === cells[c] && !cells[a]) {
-  //         console.log('Бот', a, '2');
-  //         return handleClick(a);
-  //       }
-  //       if(cells[a] && cells[a] === cells[c] && !cells[b]) {
-  //         console.log('Бот', b, '3');
-  //         return handleClick(b);
-  //       }
-  //     }
-  //       let botTurnNumber;
-  //       do {
-  //         checkEndGame();
-  //         botTurnNumber = generateNumber();
-  //         handleClick(botTurnNumber);
-  //         console.log('Рандом', botTurnNumber);
-  //         console.log(isEnd + ' IsEnd');
-  //       } while (cells[botTurnNumber] !== null ?? !isEnd);
-  //     }
-  //   }
-  // }
-
-  function checkEndGame() {
+  function checkEndGame(): void {
     if(isWinner()) return win();
     if(isDraw()) return draw();
     setStatus('Turn: ' + turn);
@@ -113,36 +82,28 @@ function Board(props: BoardInterface) {
   }
 
   function endGame(gameStatus: string): void {
-    setIsBotActive(false);
     console.log('Game Over!');
     setTurn('');
     setIsEnd(true);
-    if(gameStatus === 'draw') {
-      return setStatus('Draw!');
-    }
-    if(gameStatus === 'X' || 'O') {
-      return setStatus('Winner: ' + gameStatus);
-    }
+    if(gameStatus === 'draw') return setStatus('Draw!');
+    if(gameStatus === 'X' || 'O') return setStatus('Winner: ' + gameStatus);
   }
 
-  function restartGame() {
-    
+  function restartGame(): void {
     setCells(Array(9).fill(''));
     setIsEnd(false);
     setTurn('X');
     setStatus('');
-    setIsBotActive(true);
   }
 
-  function goToMenu() {
-    history.push("/");
+  function goToMenu(): void {
+    history.push('/');
   }
 
   React.useEffect(() => {
     checkEndGame();
-
     // eslint-disable-next-line
-  }, [cells])
+  }, [cells]);
 
   React.useEffect(() => {
     restartGame();
@@ -151,7 +112,6 @@ function Board(props: BoardInterface) {
   return (
     <>
       <p>{ status }</p>
-      <p>{ isEnd.toString() }</p>
       <div className="board">
         {
           Array(9).fill('').map((c, i) => {
@@ -159,7 +119,7 @@ function Board(props: BoardInterface) {
           })
         }
       </div>
-      { props.isPlayWithBot && <Bot handleClick={handleClick} cells={cells} lines={lines} isBotActive={isBotActive} turn={turn} />}
+      { props.isPlayWithBot && <Bot handleClick={handleClick} cells={cells} lines={lines} turn={turn} />}
       <button className="reset-button" onClick={restartGame}>Reset</button>
       <button className="menu-button" onClick={goToMenu}>Menu</button>
     </>
