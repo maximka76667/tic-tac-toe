@@ -1,11 +1,5 @@
 @import './fonts/fonts'
 
-body
-  margin: 0
-  font-family: 'Raleway', sans-serif
-  -webkit-font-smoothing: antialiased
-  -moz-osx-font-smoothing: grayscale
-
 $font-color: #000
 $bg-color: #fff
 $orange: #F7B819
@@ -14,14 +8,33 @@ $cyan: #31F7B2
 $purple: #CA00F7
 $dark-purple: #8D09AB
 
+body
+  margin: 0
+  font-family: 'Raleway', sans-serif
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+
 // Blocks
 @import './blocks/board/board'
 @import './blocks/menu/menu'
 @import './blocks/game/game'
+@import './blocks/cell/cell'
+@import './blocks/button/button'
 
 // Elements
+
+// Menu
 @import './blocks/menu/__heading/menu__heading'
 @import './blocks/menu/__game-mode/menu__game-mode'
 @import './blocks/menu/__game-mode-link/menu__game-mode-link'
+
+// Game
+@import './blocks/game/__status/game__status'
+
+// Board
+@import './blocks/board/__menu/board__menu'
+
+// Button
+@import './blocks/button/__bg/button__bg'
 
 // Modifiers

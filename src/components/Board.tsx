@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 import Bot from './Bot';
 import Cell from './Cell'
 
@@ -8,7 +8,6 @@ interface BoardInterface {
 }
 
 function Board(props: BoardInterface) {
-  let history = useHistory();
   const [cells, setCells] = React.useState(Array<string>(9).fill(''))
   const [turn, setTurn] = React.useState<string>('');
   const [status, setStatus] = React.useState('');
@@ -84,10 +83,6 @@ function Board(props: BoardInterface) {
     setStatus('');
   }
 
-  function goToMenu(): void {
-    history.push('/');
-  }
-
   React.useEffect(() => {
     checkEndGame();
     // eslint-disable-next-line
@@ -99,7 +94,7 @@ function Board(props: BoardInterface) {
 
   return (
     <>
-      <p>{ status }</p>
+      <p className="game__status">{ status }</p>
       <div className="board">
         {
           Array(9).fill('').map((c, i) => {
@@ -108,8 +103,14 @@ function Board(props: BoardInterface) {
         }
       </div>
       { props.isPlayWithBot && <Bot handleClick={handleClick} cells={cells} lines={lines} turn={turn} />}
-      <button className="reset-button" onClick={restartGame}>Reset</button>
-      <button className="menu-button" onClick={goToMenu}>Menu</button>
+      <div className="board__menu">
+        <div className="button__bg">
+          <button className="button button_type_reset" onClick={restartGame}>Reset</button>
+        </div>
+        <div className="button__bg">
+          <Link to="/" className="button button_type_menu">Menu</Link>
+        </div>
+      </div>
     </>
   )
 }
