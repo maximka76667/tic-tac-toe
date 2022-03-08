@@ -2,5 +2,17 @@
   display: grid
   grid-template-columns: repeat(3, 175px)
   grid-template-rows: repeat(3, 175px)
-  gap: 10px
+  gap: 40px
   background-color: $cyan
+
+@media (max-width: 800px)
+  .board
+    grid-template-columns: repeat(3, 120px)
+    grid-template-rows: repeat(3, 120px)
+    gap: 20px
+
+@media (max-width: 500px)
+  .board
+    grid-template-columns: repeat(3, 80px)
+    grid-template-rows: repeat(3, 80px)
+    gap: 15px
